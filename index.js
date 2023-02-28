@@ -1,5 +1,5 @@
 const express = require("express");
-require("./db");
+require("./utility/conn");
 const Admin = require("./routes/admin").Router;
 const port = process.env.PORT || 8000;
 const app = express();
