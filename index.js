@@ -1,14 +1,15 @@
 const express = require("express");
-const db = require("./db");
-const superAdminRouter =
-  require("./modules/superAdmin/superAdminRouter").Router;
+require("./db");
+const Admin = require("./routes/admin").Router;
 const port = process.env.PORT || 8000;
 const app = express();
+const errors = require('celebrate');
 
 app.use(express.json());
+app.use(errors());
 
-app.use("/superAdmin", superAdminRouter);
+app.use("/admin", Admin);
 
 app.listen(port, () => {
-  console.log("Connection is set on", port);
+  console.log("Backend is listening on", port);
 });

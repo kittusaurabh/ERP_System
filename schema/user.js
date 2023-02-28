@@ -7,10 +7,6 @@ let usersSchema = mongoose.Schema(
       type: String,
       require: true,
     },
-    superAdmin: {
-      type: Boolean,
-      default: false,
-    },
     email: {
       type: String,
     },
@@ -19,7 +15,7 @@ let usersSchema = mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["ADMIN", "STUDENT", "PRINCIPAL", "TEACHER"],
+      enum: ["admin", "student", "principal", "teacher"],
     },
   },
   {
@@ -29,20 +25,19 @@ let usersSchema = mongoose.Schema(
 
 let users = new mongoose.model("users", usersSchema);
 
-users.findOne({ role: "SUPERADMIN" }).then((res) => {
+users.findOne({ role: "admin" }).then((res) => {
   if (!res) {
     var token = jwt.sign(
       {
-        email: "superadmin",
+        email: "admin@gmail.com",
       },
       "supersecret"
     );
     users.create({
       accessToken: token,
-      superAdmin: true,
-      email: "superadmin",
-      role: "ADMIN",
-      password: "e10adc3949ba59abbe56e057f20f883e", //123456
+      email: "admin@gmail.com",
+      role: "admin",
+      password: "25d55ad283aa400af464c76d713c07ad", //12345678
     });
   }
 });
