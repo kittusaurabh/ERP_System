@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const md5 = require("md5");
-const User = require("../../model/user");
+const User = require("../model/user");
 
 exports.createUser = async (req, res) => {
   let userData = req.body;

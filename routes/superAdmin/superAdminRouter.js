@@ -1,7 +1,7 @@
 const { Joi, celebrate } = require("celebrate");
 const express = require("express");
 const router = express.Router();
-const superAdminController = require("./superAdminController");
+const Auth = require("../../operations/Auth");
 
 router.post(
   "/createUser",
@@ -11,7 +11,7 @@ router.post(
       password: Joi.string().required(),
     }),
   }),
-  superAdminController.createUser
+  Auth.createUser
 );
 router.post(
   "/login",
@@ -21,7 +21,7 @@ router.post(
       password: Joi.string().required(),
     }),
   }),
-  superAdminController.login
+  Auth.login
 );
 router.post(
   "/logout",
@@ -30,7 +30,7 @@ router.post(
       _id: Joi.string().required(),
     }),
   }),
-  superAdminController.logout
+  Auth.logout
 );
 router.post(
   "/updateUser",
@@ -41,7 +41,7 @@ router.post(
       password: Joi.string().optional(),
     }),
   }),
-  superAdminController.updateUser
+  Auth.updateUser
 );
 
 exports.Router = router;
