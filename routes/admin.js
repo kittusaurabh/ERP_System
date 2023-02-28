@@ -10,7 +10,7 @@ router.post(
     "/login",
     celebrate({
         body: Joi.object({
-            email: Joi.string().required(),
+            email: Joi.string().lowercase().optional(),
             password: Joi.string().required(),
             role: 'admin'
         }),
@@ -32,7 +32,7 @@ router.post(
     "/createUser",
     celebrate({
         body: Joi.object({
-            email: Joi.string().required(),
+            email: Joi.string().lowercase().required(),
             password: Joi.string().required(),
             role: Joi.string().default("principal")
         }),
@@ -44,11 +44,12 @@ router.post(
     celebrate({
         body: Joi.object({
             _id: Joi.string().required(),
-            email: Joi.string().optional(),
+            email: Joi.string().lowercase().optional(),
             password: Joi.string().optional(),
             role: 'principal'
         }),
     }),
+    isApiOwner.verifyToken,
     Auth.updateUser
 );
 

@@ -7,8 +7,14 @@ let usersSchema = mongoose.Schema(
       type: String,
       require: true,
     },
+    userId: String,
     email: {
       type: String,
+    },
+    verificationCode: String,
+    isVerified: {
+      type: Boolean,
+      default: false
     },
     password: {
       type: String,
