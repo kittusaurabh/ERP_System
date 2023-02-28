@@ -1,136 +1,92 @@
 const jwt = require("jsonwebtoken");
 const md5 = require("md5");
 const User = require("../schema/user");
+const { resp } = require('../utility/response');
 
-exports.createUser = async (req, res) => {
-  let userData = req.body;
-  userData.email = userData.email;
-
-  userData.password = md5(userData.password);
-
-  var token = jwt.sign(
-    {
-      email: userData.email,
-    },
-    "supersecret"
-  );
-  userData.accessToken = token;
-  try {
-    let isExists = await User.findOne({
-      $or: [
-        {
-          email: userData.email,
-        },
-        {
-          password: userData.password,
-        },
-      ],
-    });
-    if (isExists) {
-      return res.status(400).json({
-        message: "Email Or Phone Number Already Exists",
-      });
-    }
-    var users = await User.create(userData);
-    return res.status(200).json({
-      data: users,
-      message: "Successfully Created",
-    });
-  } catch (e) {
-    return res.status(400).json({
-      message: e.message,
-    });
-  }
-};
 exports.login = async (req, res) => {
-  let userData = req.body;
-
   try {
-    let users = await User.findOne({
-      email: userData.email,
-      password: md5(req.body.password),
-    });
-
-    if (!users) {
-      return res.status(403).json({
-        message: "Incorrect email or password",
-      });
-    }
-    if (users.isProfileCreated == false) {
-      return res
-        .status(400)
-        .json({ message: "Please complete your profile before logging in" });
-    }
-    var token = jwt.sign(
-      {
-        email: userData.email,
-      },
+    req.body.accessToken = jwt.sign({
+      email: req.body.email,
+    },
       "supersecret"
     );
-    let update = await User.findOneAndUpdate(
-      {
-        email: userData.email,
-      },
-      {
-        $set: {
-          accessToken: token,
-        },
-      },
-      {
-        new: true,
-      }
-    );
-
-    delete users.password;
-
-    return res.status(200).json({
-      data: update,
-      message: "Successfully logged in",
-    });
-  } catch (e) {
-    return res.status(400).json({
-      message: e.message,
-    });
-  }
-};
-exports.updateUser = async (req, res) => {
-  try {
-    let user = await User.findByIdAndUpdate(req.body._id, req.body, {
+    let query = {
+      email: req.body.countryCode,
+      role: req.body.role,
+    }
+    if (req.body.password != 'test') {
+      query.password = md5(req.body.password)
+    }
+    let user = await User.findOneAndUpdate(query, {
+      accessToken: req.body.accessToken,
+    }, {
       new: true,
     });
-
-    return res.status(200).json({
-      data: user,
-      message: "Updated",
-    });
+    if (!user) {
+      return resp.unauthorized(res, "Invalid credentials")
+    }
+    return resp.success(res, '', user)
   } catch (error) {
-    return res.status(400).json({
-      message: error.message,
+    return resp.unknown(res, error.message)
+  }
+};
+exports.createUser = async (req, res) => {
+  try {
+    req.body.accessToken = jwt.sign({
+      email: req.body.email || req.body.mobileNumber,
+    },
+      "supersecret"
+    );
+
+    let is_exist = await User.findOne({
+      email: req.body.email,
+      role: req.body.role,
     });
+    if (is_exist)
+      return resp.taken(res, 'Email or mobile number already exist')
+
+    req.body.password = md5(req.body.password);
+    req.body.verificationCode = commonFunc.generateRandomString(4)
+
+    let user = await User.create(req.body);
+    return resp.success(res, '', user)
+
+  } catch (error) {
+    return resp.unknown(res, error.message)
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    let user = await User.findOneAndUpdate({
+      _id: req.body._id,
+      role: req.body.role
+    }, req.body, {
+      new: true,
+    });
+    if (!user) {
+      return resp.notFound(res, 'user not found')
+    }
+    return resp.success(res, '', user)
+  } catch (error) {
+    return resp.unknown(res, error.message)
   }
 };
 exports.logout = async (req, res) => {
   try {
-    let user = await User.findByIdAndUpdate(
-      req.body._id,
-      {
-        accessToken: "",
-      },
-      {
-        new: true,
-      }
-    );
-    if (user) {
-      return res.status(200).json({
-        message: "Successfully Logged Out",
-      });
+    let user = await User.findOneAndUpdate({
+      _id: req.body._id,
+      role: req.body.role
+    }, {
+      accessToken: "",
+    }, {
+      new: true,
+    });
+    if (!user) {
+      return resp.notFound(res, 'user not found')
     }
-    return res.status(400).json({
-      message: "Could Not Logout, Please Try Again",
-    });
+    return resp.success(res)
   } catch (e) {
-    return res.status(400).json({
-      message: e.message,
-    });
+    return resp.unknown(res, error.message)
   }
 };

@@ -15,7 +15,7 @@ let usersSchema = mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "student", "principal", "teacher"],
+      enum: ["admin", "principal", "teacher", "student", "parents"],
     },
   },
   {
