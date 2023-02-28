@@ -3,7 +3,6 @@ require("./utility/conn");
 const Admin = require("./routes/admin").Router;
 const Principal = require("./routes/principal").Router;
 const Teacher = require("./routes/teacher").Router;
-
 const Common = require("./routes/common").Router;
 const Student = require("./routes/student").Router;
 const Parent = require("./routes/parent").Router;
