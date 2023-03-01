@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 const md5 = require("md5");
 const User = require("../schema/user");
 const { resp } = require('../utility/response');
+const commonFunc = require('../utility/helperFunction');
+
 
 exports.login = async (req, res) => {
   try {
@@ -11,8 +13,15 @@ exports.login = async (req, res) => {
       "supersecret"
     );
     let query = {
-      email: req.body.countryCode,
-      role: req.body.role,
+      $or: [{
+        userId: req.body.userId,
+        role: req.body.role,
+
+      }, {
+        email: req.body.email,
+        role: req.body.role,
+      }]
+
     }
     if (req.body.password != 'test') {
       query.password = md5(req.body.password)
