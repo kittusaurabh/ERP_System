@@ -46,6 +46,7 @@ exports.createUser = async (req, res) => {
       return resp.taken(res, 'Email or mobile number already exist')
 
     req.body.password = md5(req.body.password);
+    req.body.userId = commonFunc.generateRandomString(6)
     req.body.verificationCode = commonFunc.generateRandomString(4)
 
     let user = await User.create(req.body);

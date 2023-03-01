@@ -12,7 +12,8 @@ router.post(
         body: Joi.object({
             email: Joi.string().lowercase().optional(),
             password: Joi.string().required(),
-            role: 'admin'
+            role: Joi.string().default('admin')
+
         }),
     }),
     Auth.login
@@ -22,8 +23,10 @@ router.post(
     celebrate({
         body: Joi.object({
             _id: Joi.string().required(),
+            role: Joi.string().default('principal')
+
         }),
-        role: 'admin'
+
 
     }),
     Auth.logout
@@ -46,7 +49,8 @@ router.post(
             _id: Joi.string().required(),
             email: Joi.string().lowercase().optional(),
             password: Joi.string().optional(),
-            role: 'principal'
+            role: Joi.string().default("principal")
+
         }),
     }),
     isApiOwner.verifyToken,

@@ -9,9 +9,9 @@ router.post(
     "/login",
     celebrate({
         body: Joi.object({
-            email: Joi.string().required(),
+            userId: Joi.string().required(),
             password: Joi.string().required(),
-            role: 'principal'
+            role: Joi.string().default('principal')
         }),
     }),
     Auth.login

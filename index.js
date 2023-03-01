@@ -9,7 +9,7 @@ const Parent = require("./routes/parent").Router;
 
 const port = process.env.PORT || 8000;
 const app = express();
-const errors = require('celebrate');
+const { errors } = require('celebrate');
 
 app.use(express.json());
 app.use(errors());
